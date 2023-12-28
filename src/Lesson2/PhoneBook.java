@@ -1,22 +1,22 @@
 package Lesson2;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PhoneBook {
-    private final Map<String, List<String>> contacts;
+    private final Map<String, Set<String>> contacts;
 
     public PhoneBook() {
         contacts = new HashMap<>();
     }
 
     public void add(String lastName, String phoneNumber) {
-        contacts.computeIfAbsent(lastName, k -> new ArrayList<>()).add(phoneNumber);
+        if (!contacts.containsKey(lastName)) {
+            contacts.put(lastName, new HashSet<>());
+        }
+        contacts.get(lastName).add(phoneNumber);
     }
 
-    public List<String> get(String lastName) {
-        return contacts.getOrDefault(lastName, new ArrayList<>());
+    public Set<String> get(String lastName) {
+        return contacts.getOrDefault(lastName, new HashSet<>());
     }
 }

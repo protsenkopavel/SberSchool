@@ -39,11 +39,13 @@ public class Main {
         phoneBook.add("Bashirov", "89953325548");
         phoneBook.add("Cat", "8413848344338");
         phoneBook.add("My nephew", "164");
+        phoneBook.add("My nephew", "150");
+        phoneBook.add("My nephew", "150");
 
 
         System.out.println(phoneBook.get("Petrov"));
         System.out.println(phoneBook.get("Bashirov"));
         System.out.println(phoneBook.get("Cat"));
-        System.out.println(phoneBook.get("My niece"));
+        System.out.println(phoneBook.get("My nephew"));
     }
 }

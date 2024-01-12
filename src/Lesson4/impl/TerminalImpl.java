@@ -1,62 +1,51 @@
 package Lesson4.impl;
 
-import Lesson4.exceptions.AccountLockedException;
 import Lesson4.exceptions.IncorrectValueException;
-import Lesson4.exceptions.IncorrectInputPinException;
-import Lesson4.exceptions.NotEnoughBalanceException;
+import Lesson4.exceptions.InsufficientFundsException;
 import Lesson4.interfaces.Terminal;
 
 public class TerminalImpl implements Terminal {
-    private final TerminalServerImpl server;
-    private final PinValidatorImpl validator;
+    private final TerminalServer server;
     private final ConsoleOutput output;
 
-    public TerminalImpl(TerminalServerImpl terminalServer, PinValidatorImpl validator, ConsoleOutput output) {
-        this.server = terminalServer;
-        this.validator = validator;
+    public TerminalImpl(TerminalServer server, ConsoleOutput output) {
+        this.server = server;
         this.output = output;
     }
 
     @Override
-    public void checkAccountStatus(String pin) throws IncorrectInputPinException, AccountLockedException, InterruptedException {
-        if (!validator.validatePin(pin)) {
-            throw new IncorrectInputPinException("Введен некорректный PIN-код.");
-        }
-
-        double balance = server.checkAccountBalance();
-        output.displayMessage("Баланс на счете: " + balance);
+    public void checkAccountBalance() {
+        output.displayMessage("Баланс на счете: " + server.checkAccountBalance() + " рублей.");
     }
 
     @Override
-    public void depositMoney(double amount) throws IncorrectValueException {
-        if (amount <= 0) {
-            throw new IncorrectValueException("Невозможно пополнить баланс отрицательным значением");
+    public void depositMoney(double value) {
+        try {
+            checkInputValue(value);
+            server.deposit(value);
+            output.displayMessage("Счёт пополнен на: " + value + " рублей.");
+        } catch (IncorrectValueException e) {
+            output.displayMessage(e.getMessage());
         }
-
-        if (amount % 100 != 0) {
-            throw new IncorrectValueException("Пополнение возможно только сторублевыми купюрами");
-        }
-
-        server.deposit(amount);
-        output.displayMessage("Счёт пополнен на: " + amount +
-                ".\nТекущий баланс: " + server.checkAccountBalance());
     }
 
     @Override
-    public void withdrawMoney(double amount) throws NotEnoughBalanceException, IncorrectValueException {
-        if (amount > server.checkAccountBalance()) {
-            throw new IncorrectValueException("На вашем счёте недостаточно средств. Проверьте баланс и снимите доступные средства.");
+    public void withdrawMoney(double value) {
+        try {
+            checkInputValue(value);
+            server.withdraw(value);
+            output.displayMessage("Со счёта снято: " + value + " рублей.");
+        } catch (IncorrectValueException | InsufficientFundsException e) {
+            output.displayMessage(e.getMessage());
         }
-        if (amount <= 0) {
-            throw new IncorrectValueException("Невозможно снять со счёта отрицательное значение.");
+    }
+
+    public void checkInputValue(double value) throws IncorrectValueException {
+        if (value <= 0) {
+            throw new IncorrectValueException("Значение не может быть отрицательным или равным нулю!");
+        } else if (value % 100 != 0) {
+            throw new IncorrectValueException("Банкомат принимает/выдает только сторублевые купюры!");
         }
 
-        if (amount % 100 != 0) {
-            throw new NotEnoughBalanceException("Банкомат выдает только сторублевые купюры");
-        }
-
-        server.withdraw(amount);
-        output.displayMessage("Вы сняли со своего счёта: " + amount +
-                ".\nТекущий баланс: " + server.checkAccountBalance());
     }
 }

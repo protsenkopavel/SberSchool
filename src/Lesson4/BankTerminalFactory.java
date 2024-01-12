@@ -1,17 +1,17 @@
 package Lesson4;
 
 import Lesson4.impl.ConsoleOutput;
-import Lesson4.impl.PinValidatorImpl;
+import Lesson4.impl.PinValidator;
 import Lesson4.impl.TerminalImpl;
-import Lesson4.impl.TerminalServerImpl;
+import Lesson4.impl.TerminalServer;
 
 public class BankTerminalFactory {
     public static BankTerminal createBankTerminal() {
-        TerminalServerImpl server = new TerminalServerImpl();
-        PinValidatorImpl pinValidator = new PinValidatorImpl();
+        TerminalServer server = new TerminalServer();
         ConsoleOutput output = new ConsoleOutput();
-        TerminalImpl terminal = new TerminalImpl(server, pinValidator, output);
+        TerminalImpl terminal = new TerminalImpl(server, output);
+        PinValidator validator = new PinValidator();
 
-        return new BankTerminal(terminal);
+        return new BankTerminal(terminal, validator);
     }
 }
